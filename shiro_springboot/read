@@ -1,0 +1,119 @@
+--------------自定义登录认证
+一、创建项目
+二、添加依赖
+<!-- 添加依赖-->
+<dependency>
+    <groupId>org.apache.shiro</groupId>
+    <artifactId>shiro-spring-boot-starter</artifactId>
+    <version>1.9.0</version>
+</dependency>
+
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-boot-starter</artifactId>
+    <version>3.0.5</version>
+</dependency>
+
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.38</version>
+</dependency>
+
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+三、修改配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3303/shirodemo?characterEncoding=utf-8&useSSL=false
+    username: root
+    password: idiot_Yuqn@123
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+shiro:
+  loginUrl: /myController/login
+四、创建实体类
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
+    private BigInteger id;
+    private String name;
+    private String pwd;
+    private BigInteger rid;
+}
+五、创建mapper接口
+六、创建service层
+七、创建自定义realm
+八、创建配置类
+九、添加控制器
+
+----------自定义角色授权
+一、添加控制器方法
+// 登录验证角色
+@RequiresRoles("yuqn")
+@GetMapping("userLoginRoles")
+@ResponseBody
+public String userLoginRoles(){
+    System.out.println("角色验证成功");
+    return null;
+}
+// 登录验证角色权限
+@RequiresPermissions("user:add")
+@GetMapping("userLoginPermissions")
+@ResponseBody
+public String userLoginPermissions(){
+    System.out.println("角色权限验证成功");
+    return null;
+}
+二、添加realm类的doGetAuthorizationInfo方法
+/**
+ * @author: yuqn
+ * @Date: 2024/4/10 14:49
+ * @description:
+ * 自定义授权方法
+ * @param: null
+ * @return: null
+ */
+@Override
+protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+    System.out.println("进入到角色验证方法");
+    // 1 获取用户信息
+    String name = principalCollection.getPrimaryPrincipal().toString();
+    // 2 调用接口请求数据库，获取用户角色信息，这里省略
+    // 2.5 调用接口请求数据库，获取角色权限信息
+    // 3 创建对象，封装当前登录用户的角色、权限信息
+    SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+    info.addRole("yuqn"); // 模拟查询角色名为yuqn
+    info.addStringPermission("user:add"); // 模拟该角色的权限有 user:add
+    // 4 返回信息
+    return info;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

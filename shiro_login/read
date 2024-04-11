@@ -1,0 +1,41 @@
+一、创建项目
+二、添加依赖
+<dependencies>
+    <!-- shiro依赖-->
+    <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-core</artifactId>
+        <version>1.9.0</version>
+    </dependency>
+    <!-- 日志依赖-->
+    <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.2</version>
+    </dependency>
+</dependencies>
+三、创建ini文件（保存权限信息，也可以通过数据库）
+[user]
+yuqn=idiot,admin,student
+admin=123456
+四、创建测试类
+public static void main(String[] args) {
+    // 1、初始化获取securityManager
+    IniSecurityManagerFactory factory = new IniSecurityManagerFactory("classpath:shiro.ini");
+    SecurityManager securityManager = factory.getInstance();
+    SecurityUtils.setSecurityManager(securityManager);
+    // 2、获取subject对象
+    Subject subject = SecurityUtils.getSubject();
+    // 3、创建token对象
+    AuthenticationToken token = new UsernamePasswordToken("yuqn","idiot");
+    try {
+        // 4、完成登录
+        subject.login(token);
+        System.out.println("登录成功");
+        // 5、判断角色
+        boolean isgo = subject.hasRole("student");
+        System.out.println(isgo);
+    }catch (Exception e){
+        e.printStackTrace();
+    }
+}
